@@ -1,0 +1,58 @@
+mqtt:
+  client:
+    protocol: 4      # MQTTv311
+  connection:
+    host: 192.168.178.13
+    port: 1883
+    keepalive: 60
+  private_path: openmower
+serializer: json:dumps
+deserializer: json:loads
+bridge:
+  # 
+  # ping pong
+  - factory: mqtt_bridge.bridge:RosToMqttBridge
+    msg_type: std_msgs.msg:Bool
+    topic_from: /ping
+    topic_to: ping
+  - factory: mqtt_bridge.bridge:MqttToRosBridge
+    msg_type: std_msgs.msg:Bool
+    topic_from: ping
+    topic_to: /pong
+    
+  # echo back
+  - factory: mqtt_bridge.bridge:RosToMqttBridge
+    msg_type: std_msgs.msg:String
+    topic_from: echo
+    topic_to: mower/echo
+  - factory: mqtt_bridge.bridge:MqttToRosBridge
+    msg_type: std_msgs.msg:String
+    topic_from: mower/echo
+    topic_to: /back
+    
+  # private path
+  - factory: mqtt_bridge.bridge:RosToMqttBridge
+    msg_type: std_msgs.msg:String
+    topic_from: /private/echo
+    topic_to: ~/echo
+  - factory: mqtt_bridge.bridge:MqttToRosBridge
+    msg_type: std_msgs.msg:String
+    topic_from: ~/echo
+    topic_to: /private/back
+    #mowerstatus
+  #- factory: mqtt_bridge.bridge:RosToMqttBridge
+  #  msg_type: mower_msgs.msg:Status
+  #  topic_from: /mower/status
+  #  topic_to: mower/status
+  #   
+  #mowerstatus to mqtt
+  - factory: mqtt_bridge.bridge:RosToMqttBridge
+    msg_type: mower2smarthome.msg:mqtt
+    topic_from: /mower/2mqtt
+    topic_to: mower/state
+
+   #mqtt to mower
+  - factory: mqtt_bridge.bridge:MqttToRosBridge
+    msg_type: std_msgs.msg:String
+    topic_from: mower/commands/command
+    topic_to: /mower/mqttcmd

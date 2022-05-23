@@ -1,0 +1,7 @@
+<launch>
+  <arg name="use_tls" default="false" />
+  <node name="mqtt_bridge" pkg="mqtt_bridge" type="mqtt_bridge_node.py" output="screen">
+    <rosparam command="delete" param="" />
+    <rosparam command="load" file="$(find mower2smarthome)/params/mqtt_params.yaml" />
+  </node>
+</launch>
